@@ -3,14 +3,17 @@ import NextAuth, { NextAuthOptions } from 'next-auth';
 import GoogleProvider from 'next-auth/providers/google';
 
 export const authOptions: NextAuthOptions = {
+  // Configure one or more authentication providers
   providers: [
     GoogleProvider({
       clientId: process.env.GOOGLE_OAUTH_ID || '',
       clientSecret: process.env.GOOGLE_OAUTH_SECRET || '',
     }),
+    // ...add more providers here
   ],
   callbacks: {
     async signIn({ user: { id, name, email, image } }) {
+      console.log('@@@@id:', id);
       if (!email) {
         return false;
       }
@@ -29,17 +32,23 @@ export const authOptions: NextAuthOptions = {
         session.user = {
           ...user,
           username: user.email?.split('@')[0] || '',
-          // id: token.id as string,
+          id: token.id as string,
         };
       }
+      console.log('>>>session user in authOptions: ', session.user);
+      console.log('<<< token in authOptions: ', token);
+
       return session;
+    },
+    async jwt({ token, user }) {
+      if (user) {
+        token.id = user.id;
+      }
+      return token;
     },
   },
   pages: {
     signIn: '/auth/signin',
   },
 };
-
-// export default NextAuth(authOptions);
-const handler = NextAuth(authOptions);
-export { handler as GET, handler as POST };
+export default NextAuth(authOptions);

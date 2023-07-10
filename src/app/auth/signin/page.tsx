@@ -1,5 +1,6 @@
 import { getServerSession } from 'next-auth';
-import { authOptions } from '../[...nextauth]/route';
+import { authOptions } from '@/pages/api/auth/[...nextauth]';
+// import { authOptions } from '../[...nextauth]/route';
 import { redirect } from 'next/navigation';
 import { getProviders } from 'next-auth/react';
 import SignIn from '@/components/SignIn';
